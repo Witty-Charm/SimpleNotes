@@ -1,4 +1,4 @@
-package com.example.calculatorcompose
+package com.example.simplenotes
 
 import org.junit.Test
 
