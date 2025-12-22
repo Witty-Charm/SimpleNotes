@@ -20,7 +20,7 @@ A modern, lightweight Android application for managing daily tasks. Built with *
 ## 📸 Screenshots
 | Main List | Edit Mode |
 |-----------|-----------|
-| <img src="screenshots/main_list_black.png" width="300"> | <img src="screenshots/edit_mode_black.png" width="300"> |
+![Main Screen](screenshots/main_list_black.png)
 
 ## 🚀 How to Run
 1. Clone the repository:
