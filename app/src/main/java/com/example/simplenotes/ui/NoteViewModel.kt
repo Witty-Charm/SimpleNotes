@@ -67,7 +67,7 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
                 if(noteText.isBlank()) return
 
                 viewModelScope.launch {
-                    dao.upsertNote(Note(name = noteText))
+                    dao.upsertNote(Note(title = noteText))
                     _state.update { it.copy(noteText = "") }
                 }
             }
@@ -84,7 +84,7 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
                         it.copy(
                             isEditing = true,
                             editingNote = event.note,
-                            editedNoteText = event.note.name
+                            editedNoteText = event.note.title
                         )
                     }
             }
@@ -92,7 +92,7 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
             is NoteEvent.SaveEditedNote -> {
                 viewModelScope.launch {
                     state.value.editingNote?.let { note ->
-                        val updatedNote = note.copy(name = state.value.editedNoteText)
+                        val updatedNote = note.copy(title = state.value.editedNoteText)
                         dao.upsertNote(updatedNote)
                         _state.update {
                             it.copy(
@@ -119,7 +119,7 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
                 if (updatedText.isBlank()) return
 
                 viewModelScope.launch {
-                    dao.upsertNote(editingNote.copy(name = updatedText))
+                    dao.upsertNote(editingNote.copy(title = updatedText))
                     _state.update { it.copy(
                         isEditing = false,
                         editingNote = null,

@@ -147,7 +147,7 @@ fun NoteContent(
                                 }
                             } else {
                                 Text(
-                                    text = note.name,
+                                    text = note.title,
                                     modifier = Modifier.weight(1f),
                                     style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp)
                                 )
