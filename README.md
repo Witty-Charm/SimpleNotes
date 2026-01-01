@@ -20,8 +20,7 @@ A modern, lightweight Android application for managing daily tasks. Built with *
 ## 📸 Screenshots
 | Main List | Edit Mode |
 |-----------|-----------|
-| ![List Screen](https://raw.githubusercontent.com/Jolly-Bell/SimpleNotes/main/screenshots/main_list.png) | ![Edit Screen](https://raw.githubusercontent.com/Jolly-Bell/SimpleNotes/main/screenshots/edit_mode.png) |
-*(Note: Replace links with your actual screenshots after uploading them to a 'screenshots' folder)*
+| <img src="app/src/main/screenshots/main_list_black.png" width="300"> | <img src="app/src/main/screenshots/edit_mode_black.png" width="300"> |
 
 ## 🚀 How to Run
 1. Clone the repository:
