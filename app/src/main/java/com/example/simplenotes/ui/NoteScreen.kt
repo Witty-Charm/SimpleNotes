@@ -1,5 +1,7 @@
 package com.example.simplenotes.ui
 
+import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,6 +66,7 @@ fun NoteContent(
     onToggleNote: (Note, Boolean) -> Unit,
     onClearAll: () -> Unit,
 ) {
+    val context = LocalContext.current
     Scaffold(topBar = { TopAppBar(title = { Text(text = "📝 Todo's list") }) }, bottomBar = {
         BottomAppBar(
             containerColor = MaterialTheme.colorScheme.background,
@@ -121,7 +125,13 @@ fun NoteContent(
             ) {
                 items(notes) { note ->
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                val intent = Intent(context, NoteDetailActivity::class.java)
+                                intent.putExtra("note_id", note.id)
+                                context.startActivity(intent)
+                            },
                         shape = RoundedCornerShape(12.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {

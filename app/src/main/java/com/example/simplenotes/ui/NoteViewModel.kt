@@ -13,6 +13,7 @@ import com.example.simplenotes.data.Note
 import com.example.simplenotes.data.NoteDAO
 import com.example.simplenotes.data.NoteDatabase
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,21 +46,6 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
             dao.deleteAll()
         }
     }
-
-    var timeLeft by mutableStateOf(10)
-    var isRunning by mutableStateOf(false)
-    fun startTimer() {
-        if (isRunning) return
-        isRunning = true
-        viewModelScope.launch {
-            while (timeLeft > 0) {
-                delay(1000)
-                timeLeft--
-            }
-            isRunning = false
-        }
-    }
-
     fun onEvent(event: NoteEvent) {
         when(event) {
             is NoteEvent.SaveNote -> {
@@ -139,6 +125,21 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
                     dao.upsertNote(updatedNote)
                 }
             }
+        }
+    }
+    fun getNoteById(id: Int): Flow<Note> {
+        return dao.getNoteById(id)
+    }
+
+    fun insertNote(note: Note) {
+        viewModelScope.launch {
+            dao.upsertNote(note)
+        }
+    }
+
+    fun updateNote(note: Note) {
+        viewModelScope.launch {
+            dao.upsertNote(note)
         }
     }
 }
