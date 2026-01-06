@@ -35,15 +35,17 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.simplenotes.data.Note
@@ -65,6 +67,8 @@ fun NoteContent(
     onDeleteNote: (Note) -> Unit,
     onToggleNote: (Note, Boolean) -> Unit,
     onClearAll: () -> Unit,
+    searchQuery: String,
+    onSearchChange: (String) -> Unit,
 ) {
     val context = LocalContext.current
     Scaffold(topBar = { TopAppBar(title = { Text(text = "📝 Todo's list") }) }, bottomBar = {
@@ -110,6 +114,13 @@ fun NoteContent(
                 .fillMaxSize()
                 .padding(16.dp),
         ) {
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                label = {Text("Search notes")},
+                value = searchQuery,
+                onValueChange = onSearchChange,
+                shape = RoundedCornerShape(12.dp)
+            )
             OutlinedTextField(
                 value = noteText,
                 onValueChange = onNoteTextChange,
@@ -182,8 +193,13 @@ fun NoteContent(
 @Composable
 fun NoteScreen(viewModel: NoteViewModel) {
     val state by viewModel.state.collectAsState()
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredNotes = state.notes.filter { note ->
+        note.title.contains(searchQuery, ignoreCase = true)
+    }
     NoteContent(
-        notes = state.notes,
+        notes = filteredNotes,
         noteText = state.noteText,
         noteTextEdited = state.editedNoteText,
         onNoteTextChange = { text ->
@@ -220,5 +236,10 @@ fun NoteScreen(viewModel: NoteViewModel) {
         },
 
         onClearAll = { viewModel.deleteAll() },
+
+        searchQuery = searchQuery,
+
+        onSearchChange = { searchQuery = it},
+
     )
 }
