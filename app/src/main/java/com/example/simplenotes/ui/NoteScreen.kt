@@ -45,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,6 +70,8 @@ fun NoteContent(
     onClearAll: () -> Unit,
     searchQuery: String,
     onSearchChange: (String) -> Unit,
+    priorityFilter: String,
+    onPriorityFilterChange: (String) -> Unit
 ) {
     val context = LocalContext.current
     Scaffold(topBar = { TopAppBar(title = { Text(text = "📝 Todo's list") }) }, bottomBar = {
@@ -121,6 +124,22 @@ fun NoteContent(
                 onValueChange = onSearchChange,
                 shape = RoundedCornerShape(12.dp)
             )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(9.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                listOf("All", "Regular", "Important").forEach { label ->
+                    Button(
+                        onClick = { onPriorityFilterChange(label) },
+                        modifier = Modifier.height(36.dp)
+                    ) {
+                        Text(label)
+                    }
+                }
+            }
+
             OutlinedTextField(
                 value = noteText,
                 onValueChange = onNoteTextChange,
@@ -194,10 +213,16 @@ fun NoteContent(
 fun NoteScreen(viewModel: NoteViewModel) {
     val state by viewModel.state.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
+    var priorityFilter by remember { mutableStateOf("All") }
 
     val filteredNotes = state.notes.filter { note ->
-        note.title.contains(searchQuery, ignoreCase = true)
+        note.title.contains(searchQuery, ignoreCase = true) &&
+                (priorityFilter == "All" ||
+                        (priorityFilter == "Regular" && note.priority == 0) ||
+                        (priorityFilter == "Important" && note.priority == 1))
     }
+
+
     NoteContent(
         notes = filteredNotes,
         noteText = state.noteText,
@@ -240,6 +265,10 @@ fun NoteScreen(viewModel: NoteViewModel) {
         searchQuery = searchQuery,
 
         onSearchChange = { searchQuery = it},
+
+        priorityFilter = priorityFilter,
+
+        onPriorityFilterChange = { priorityFilter = it }
 
     )
 }
