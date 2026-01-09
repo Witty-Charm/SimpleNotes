@@ -1,8 +1,10 @@
 package com.example.simplenotes.ui
 
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -34,9 +36,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,7 +50,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -119,7 +125,7 @@ fun NoteContent(
         ) {
             TextField(
                 modifier = Modifier.fillMaxWidth(),
-                label = {Text("Search notes")},
+                label = { Text("Search notes") },
                 value = searchQuery,
                 onValueChange = onSearchChange,
                 shape = RoundedCornerShape(12.dp)
@@ -153,54 +159,88 @@ fun NoteContent(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(notes) { note ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                val intent = Intent(context, NoteDetailActivity::class.java)
-                                intent.putExtra("note_id", note.id)
-                                context.startActivity(intent)
-                            },
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(12.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            if (note == onBeingEdited) {
-                                OutlinedTextField(
-                                    value = noteTextEdited,
-                                    onValueChange = onNoteTextChangeEdit,
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                IconButton(onClick = { onSaveEdit(note) }) {
-                                    Icon(Icons.Default.Check, contentDescription = "Save")
-                                }
-                                IconButton(onClick = onCancelEdit) {
-                                    Icon(Icons.Default.Close, contentDescription = "Cancel")
-                                }
+                items(
+                    notes,
+                    { it.id!! }) { note ->
+                    val dismissState = rememberSwipeToDismissBoxState(
+                        confirmValueChange = { value ->
+                            if (value == SwipeToDismissBoxValue.EndToStart) {
+                                onDeleteNote(note)
+                                true
                             } else {
-                                Text(
-                                    text = note.title,
-                                    modifier = Modifier.weight(1f),
-                                    style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp)
-                                )
-                                IconButton(onClick = { onStartEdit(note) }) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Edit")
-                                }
+                                false
                             }
+                        }
+                    )
 
-                            IconButton(onClick = { onDeleteNote(note) }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Delete")
+
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        enableDismissFromStartToEnd = false,
+                        backgroundContent = {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color.Red)
+                                    .padding(horizontal = 20.dp),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Text(text = "Delete")
                             }
-                            Checkbox(
-                                checked = note.isDone, onCheckedChange = { onToggleNote(note, it) })
+                        }
+                    ) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val intent = Intent(context, NoteDetailActivity::class.java)
+                                    intent.putExtra("note_id", note.id)
+                                    context.startActivity(intent)
+                                },
+                            shape = RoundedCornerShape(12.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(12.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                if (note == onBeingEdited) {
+                                    OutlinedTextField(
+                                        value = noteTextEdited,
+                                        onValueChange = onNoteTextChangeEdit,
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    IconButton(onClick = { onSaveEdit(note) }) {
+                                        Icon(Icons.Default.Check, contentDescription = "Save")
+                                    }
+                                    IconButton(onClick = onCancelEdit) {
+                                        Icon(Icons.Default.Close, contentDescription = "Cancel")
+                                    }
+                                } else {
+                                    Text(
+                                        text = note.title,
+                                        modifier = Modifier.weight(1f),
+                                        style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp)
+                                    )
+                                    IconButton(onClick = { onStartEdit(note) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                                    }
+                                }
+
+                                IconButton(onClick = { onDeleteNote(note) }) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Delete")
+                                }
+                                Checkbox(
+                                    checked = note.isDone,
+                                    onCheckedChange = { onToggleNote(note, it) })
+
+                            }
                         }
                     }
                 }
@@ -221,8 +261,6 @@ fun NoteScreen(viewModel: NoteViewModel) {
                         (priorityFilter == "Regular" && note.priority == 0) ||
                         (priorityFilter == "Important" && note.priority == 1))
     }
-
-
     NoteContent(
         notes = filteredNotes,
         noteText = state.noteText,
@@ -264,7 +302,7 @@ fun NoteScreen(viewModel: NoteViewModel) {
 
         searchQuery = searchQuery,
 
-        onSearchChange = { searchQuery = it},
+        onSearchChange = { searchQuery = it },
 
         priorityFilter = priorityFilter,
 
@@ -272,3 +310,6 @@ fun NoteScreen(viewModel: NoteViewModel) {
 
     )
 }
+
+
+
