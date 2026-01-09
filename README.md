@@ -44,12 +44,12 @@ A modern, feature-rich Android application for managing daily tasks with an intu
 ### Light Theme
 | Search & Filter | Detail Screen | Note Editing |
 |:---:|:---:|:---:|
-| ![Light List](screenshots/light_main.png) | ![Light Detail](screenshots/light_detail.png) | ![Light Edit](screenshots/light_edit.png) |
+| ![Light List](app/src/main/screenshots/light_main.png) | ![Light Detail](app/src/main/screenshots/light_detail.png) | ![Light Edit](app/src/main/screenshots/light_edit.png) |
 
 ### Dark Theme
 | Search & Filter | Swipe Delete | List View |
 |:---:|:---:|:---:|
-| ![Dark List](screenshots/dark_main.png) | ![Dark Swipe](screenshots/dark_swipe.png) | ![Dark List](screenshots/dark_list.png) |
+| ![Dark List](app/src/main/screenshots/dark_main.png) | ![Dark Swipe](app/src/main/screenshots/dark_swipe.png) | ![Dark List](app/src/main/screenshots/dark_list.png) |
 
 ---
 
