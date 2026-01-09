@@ -186,7 +186,7 @@ fun NoteContent(
                                     .padding(horizontal = 20.dp),
                                 contentAlignment = Alignment.CenterEnd
                             ) {
-                                Text(text = "Delete")
+                                Icon(Icons.Default.Delete, contentDescription = null)
                             }
                         }
                     ) {
