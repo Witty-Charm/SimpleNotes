@@ -7,5 +7,7 @@ data class NoteState(
     val noteText: String = "",
     val isEditing: Boolean = false,
     val editingNote: Note? = null,
-    val editedNoteText: String = ""
+    val editedNoteText: String = "",
+    val searchQuery: String = "",
+    val priorityFilter: String = "All"
 )

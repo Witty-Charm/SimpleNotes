@@ -168,23 +168,18 @@ fun NoteContent(
                 items(
                     notes,
                     { it.id!! }) { note ->
-                    val dismissState = rememberSwipeToDismissBoxState(
-                        confirmValueChange = { value ->
-                            if (value == SwipeToDismissBoxValue.EndToStart) {
-                                onDeleteNote(note)
-                                true
-                            } else {
-                                false
+                    Box(modifier = Modifier.animateItem()
+                    ) {
+                        val dismissState = rememberSwipeToDismissBoxState(
+                            confirmValueChange = { value ->
+                                if (value == SwipeToDismissBoxValue.EndToStart) {
+                                    onDeleteNote(note)
+                                    true
+                                } else {
+                                    false
+                                }
                             }
-                        }
-                    )
-
-                    LaunchedEffect(dismissState.currentValue) {
-                        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-                            delay(300)
-                            onDeleteNote(note)
-                        }
-                    }
+                        )
 
                     SwipeToDismissBox(
                         state = dismissState,
@@ -254,6 +249,7 @@ fun NoteContent(
 
                             }
                         }
+                    }
                     }
                 }
             }

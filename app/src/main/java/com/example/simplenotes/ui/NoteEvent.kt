@@ -15,5 +15,8 @@ sealed interface NoteEvent {
     data class DeleteNote(val note: Note): NoteEvent
     data class StartEditing(val note: Note): NoteEvent
     data class ToggleNoteChecked(val note: Note): NoteEvent
+    data class OnSearchQueryChange(val query: String): NoteEvent
+    data class OnPriorityFilterChange(val filter: String): NoteEvent
+
 
 }
