@@ -1,9 +1,10 @@
 package com.example.simplenotes.ui
 
+import android.app.AlarmManager
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,7 +13,6 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.simplenotes.data.Note
 import com.example.simplenotes.data.NoteDAO
 import com.example.simplenotes.data.NoteDatabase
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,13 +20,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
+class NoteViewModel(
+    private val dao: NoteDAO,
+    private val context: Context
+) : ViewModel() {
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
                 val dao = NoteDatabase.getDatabase(application).dao()
-                NoteViewModel(dao)
+                NoteViewModel(dao, application)
             }
         }
     }
@@ -125,6 +128,8 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
                     dao.upsertNote(updatedNote)
                 }
             }
+
+            else -> {}
         }
     }
     fun getNoteById(id: Int): Flow<Note> {
@@ -141,5 +146,27 @@ class NoteViewModel(private val dao: NoteDAO) : ViewModel() {
         viewModelScope.launch {
             dao.upsertNote(note)
         }
+    }
+
+    fun scheduleReminder(note: Note, reminderTime: Long) {
+        val intent = Intent(context, NotesNotificationReceiver::class.java)
+        intent.putExtra("note_title", note.title)
+        intent.putExtra("note_description", note.description)
+
+        val noteId = note.id ?: return
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            noteId,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            reminderTime,
+            pendingIntent
+        )
     }
 }

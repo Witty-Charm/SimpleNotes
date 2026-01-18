@@ -260,6 +260,10 @@ fun NoteDetailScreen(
                         viewModel.updateNote(note)
                     }
 
+                    if (reminderTime != null) {
+                        viewModel.scheduleReminder(note, reminderTime as Long)
+                    }
+
                     onBack()
                 },
                 modifier = Modifier.fillMaxWidth()
