@@ -27,7 +27,7 @@ class NotesNotificationService(
             .setContentIntent(activityPendingIntent)
             .setAutoCancel(true)
             .setStyle(NotificationCompat.BigTextStyle()
-                .bigText("Your notification text"))
+                .bigText(description))
             .build()
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
