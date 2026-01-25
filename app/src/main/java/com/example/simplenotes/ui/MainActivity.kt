@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
             )
             channel.description = "Used for push notifications for reminder"
 
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
