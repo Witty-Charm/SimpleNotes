@@ -39,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
@@ -59,6 +60,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.example.simplenotes.data.Note
 import kotlinx.coroutines.delay
@@ -181,7 +183,7 @@ fun NoteContent(
                                 }
                             }
                         )
-
+                        // Snackbar(modifier = Modifier.fillMaxWidth()) {} //
                     SwipeToDismissBox(
                         state = dismissState,
                         enableDismissFromStartToEnd = false,
@@ -260,15 +262,17 @@ fun NoteContent(
 
 @Composable
 fun NoteScreen(viewModel: NoteViewModel) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     var searchQuery by remember { mutableStateOf("") }
     var priorityFilter by remember { mutableStateOf("All") }
 
-    val filteredNotes = state.notes.filter { note ->
-        note.title.contains(searchQuery, ignoreCase = true) &&
-                (priorityFilter == "All" ||
-                        (priorityFilter == "Regular" && note.priority == 0) ||
-                        (priorityFilter == "Important" && note.priority == 1))
+    val filteredNotes = remember(state.notes, searchQuery, priorityFilter) {
+        state.notes.filter { note ->
+            note.title.contains(searchQuery, ignoreCase = true) &&
+                    (priorityFilter == "All" ||
+                            (priorityFilter == "Regular" && note.priority == 0) ||
+                            (priorityFilter == "Important" && note.priority == 1))
+        }
     }
     NoteContent(
         notes = filteredNotes,
