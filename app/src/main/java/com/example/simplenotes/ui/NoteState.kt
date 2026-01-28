@@ -9,5 +9,6 @@ data class NoteState(
     val editingNote: Note? = null,
     val editedNoteText: String = "",
     val searchQuery: String = "",
-    val priorityFilter: String = "All"
+    val priorityFilter: String = "All",
+    val category: String = ""
 )
